@@ -24,26 +24,26 @@ namespace DatabaseFirstLINQ
             ProblemSeven();
             ProblemEight();
             ProblemNine();
-            //ProblemTen();
-            //ProblemEleven();
-            //ProblemTwelve();
-            //ProblemThirteen();
-            //ProblemFourteen();
-            //ProblemFifteen();
-            //ProblemSixteen();
-            //ProblemSeventeen();
-            //ProblemEighteen();
-            //ProblemNineteen();
-            //ProblemTwenty();
+            ProblemTen();
+            ProblemEleven();
+            ProblemTwelve();
+            ProblemThirteen();
+            ProblemFourteen();
+            ProblemFifteen();
+            ProblemSixteen();
+            ProblemSeventeen();
+            ProblemEighteen();
+            ProblemNineteen();
+            ProblemTwenty();
         }
 
-        // <><><><><><><><> R Actions (Read) <><><><><><><><><>
+         //<><><><><><><><> R Actions(Read) <><><><><><><><><>
         private void ProblemOne()
         {
             // Write a LINQ query that returns the number of users in the Users table.
             // HINT: .ToList().Count
             var countUsers = _context.Users.ToList().Count;
-                Console.WriteLine(countUsers);
+            Console.WriteLine(countUsers);
         }
 
         private void ProblemTwo()
@@ -63,7 +63,7 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that gets each product where the products price is greater than $150.
             // Then print the name and price of each product from the above query to the console.
             var expensiveProduct = _context.Products.Where(p => p.Price >= 150);
-            foreach(var product in expensiveProduct)
+            foreach (var product in expensiveProduct)
             {
                 Console.WriteLine(product.Name + " $" + product.Price);
             }
@@ -75,7 +75,7 @@ namespace DatabaseFirstLINQ
             // Then print the name of each product from the above query to the console.
 
             var productsWithS = _context.Products.Where(p => p.Name.Contains("s"));
-            foreach(var product in productsWithS)
+            foreach (var product in productsWithS)
             {
                 Console.WriteLine(product.Name);
             }
@@ -87,7 +87,7 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that gets all of the users who registered BEFORE 2016
             // Then print each user's email and registration date to the console.
             var userRegistrationDate = _context.Users.Where(user => user.RegistrationDate >= new DateTime(2015, 12, 31, 0, 0, 0));
-            foreach(var user in userRegistrationDate)
+            foreach (var user in userRegistrationDate)
             {
                 Console.WriteLine(user.Email + "," + " " + user.RegistrationDate);
             }
@@ -98,7 +98,7 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that gets all of the users who registered AFTER 2016 and BEFORE 2018
             // Then print each user's email and registration date to the console.
             var usersBetweenDates = _context.Users.Where(x => x.RegistrationDate >= new DateTime(2016, 01, 01, 0, 0, 0) && x.RegistrationDate < new DateTime(2018, 01, 01, 0, 0, 0));
-            foreach(var user in usersBetweenDates)
+            foreach (var user in usersBetweenDates)
             {
                 Console.WriteLine(user.Email + "," + " " + user.RegistrationDate);
             }
@@ -140,8 +140,22 @@ namespace DatabaseFirstLINQ
 
         private void ProblemTen()
         {
+            Console.WriteLine("Problem10");
             // Write a LINQ query that retreives all of the products in the shopping cart of users who have the role of "Employee".
-            // Then print the user's email as well as the product's name, price, and quantity to the console.
+            // Then print the user's email as well as the product's name, price, and quantity to the console.            
+            var rollOfUser = _context.UserRoles.Include(ru => ru.User).Include(ru => ru.Role).Where(ru => ru.Role.RoleName == "Employee").Select(ru => ru.UserId);
+
+            var itemCart = _context.ShoppingCarts.Include(emcarts => emcarts.Product).Include(emcarts => emcarts.User).Where(emcart => rollOfUser.Contains(emcart.UserId));
+
+            foreach (var item in itemCart)
+            {
+
+
+                Console.WriteLine($"Email:{item.User.Email} bought: {item.Quantity} {item.Product.Name} for {item.Product.Price} each.");
+
+            }
+
+
 
         }
 
@@ -159,19 +173,31 @@ namespace DatabaseFirstLINQ
             };
             _context.Users.Add(newUser);
             _context.SaveChanges();
+            Console.WriteLine(newUser.Email);
+
         }
 
         private void ProblemTwelve()
         {
             // Create a new Product object and add that product to the Products table using LINQ.
+            Product newProduct = new Product()
+            {
+                Name = "Microsoft Holo Lens 2",
+                Description = "An ergonomic, untethered self-contained holographic device with enterprise-ready applications to increase user accuracy and output.",
+                Price = 3500
+            };
+
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
+            Console.WriteLine(newProduct.Name);
 
         }
 
-        private void ProblemThirteen()
+    private void ProblemThirteen()
         {
             // Add the role of "Customer" to the user we just created in the UserRoles junction table using LINQ.
             var roleId = _context.Roles.Where(r => r.RoleName == "Customer").Select(r => r.Id).SingleOrDefault();
-            var userId = _context.Users.Where(u => u.Email == "david@gmail.com").Select(u => u.Id).SingleOrDefault();
+            var userId = _context.Users.Where(u => u.Email == "david@gmail.com").Select(u => u.Id).FirstOrDefault();
             UserRole newUserRole = new UserRole()
             {
                 UserId = userId,
@@ -184,7 +210,16 @@ namespace DatabaseFirstLINQ
         private void ProblemFourteen()
         {
             // Add the product you create to the user we created in the ShoppingCart junction table using LINQ.
-
+            var userCart = _context.Users.Where(uc => uc.Email == "david@gmail.com").Select(uc =>uc.Id).FirstOrDefault();
+            var newProduct = _context.Products.Where(np => np.Name == "Microsoft Holo Lens 2").Select(np => np.Id).FirstOrDefault();
+            ShoppingCart newShoppingCart = new ShoppingCart()
+            {
+                UserId = userCart,
+                ProductId = newProduct,
+                Quantity = 1
+            };
+            _context.ShoppingCarts.Add(newShoppingCart);
+            _context.SaveChanges();
         }
 
         // <><> U Actions (Update) <><>
@@ -201,7 +236,12 @@ namespace DatabaseFirstLINQ
         private void ProblemSixteen()
         {
             // Update the price of the product you created to something different using LINQ.
-
+            var Product = _context.Products.Where(pu => pu.Price == 3500).FirstOrDefault();
+            Product.Price = 5199;
+            _context.Products.Update(Product);
+            _context.SaveChanges();
+            Console.WriteLine(Product.Name);
+            Console.WriteLine(Product.Price);
         }
 
         private void ProblemSeventeen()
@@ -209,7 +249,7 @@ namespace DatabaseFirstLINQ
             // Change the role of the user we created to "Employee"
             // HINT: You need to delete the existing role relationship and then create a new UserRole object and add it to the UserRoles table
             // See problem eighteen as an example of removing a role relationship
-            var userRole = _context.UserRoles.Where(ur => ur.User.Email == "mike@gmail.com").SingleOrDefault();
+            var userRole = _context.UserRoles.Where(ur => ur.User.Email == "mike@gmail.com").FirstOrDefault();
             _context.UserRoles.Remove(userRole);
             UserRole newUserRole = new UserRole()
             {
@@ -225,7 +265,9 @@ namespace DatabaseFirstLINQ
         private void ProblemEighteen()
         {
             // Delete the role relationship from the user who has the email "oda@gmail.com" using LINQ.
-
+            var roleRelation = _context.UserRoles.Where(ur => ur.User.Email == "oda.gmail.com").SingleOrDefault();
+            _context.UserRoles.Remove(roleRelation);
+            _context.SaveChanges();
         }
 
         private void ProblemNineteen()
@@ -243,7 +285,8 @@ namespace DatabaseFirstLINQ
         private void ProblemTwenty()
         {
             // Delete the user with the email "oda@gmail.com" from the Users table using LINQ.
-
+            var deleteUser = _context.Users.Where(delUser => delUser.Email == "oda@gmail.com").FirstOrDefault();
+            _context.Users.Remove(deleteUser);
         }
 
         // <><><><><><><><> BONUS PROBLEMS <><><><><><><><><>
