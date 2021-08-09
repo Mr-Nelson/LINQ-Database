@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DatabaseFirstLINQ.Models;
+using System.Collections.Generic;
 
 namespace DatabaseFirstLINQ
 {
@@ -15,26 +16,27 @@ namespace DatabaseFirstLINQ
         }
         public void RunLINQQueries()
         {
-            ProblemOne();
-            ProblemTwo();
-            ProblemThree();
-            ProblemFour();
-            ProblemFive();
-            ProblemSix();
-            ProblemSeven();
-            ProblemEight();
-            ProblemNine();
-            ProblemTen();
-            ProblemEleven();
-            ProblemTwelve();
-            ProblemThirteen();
-            ProblemFourteen();
-            ProblemFifteen();
-            ProblemSixteen();
-            ProblemSeventeen();
-            ProblemEighteen();
-            ProblemNineteen();
-            ProblemTwenty();
+            //ProblemOne();
+            //ProblemTwo();
+            //ProblemThree();
+            //ProblemFour();
+            //ProblemFive();
+            //ProblemSix();
+            //ProblemSeven();
+            //ProblemEight();
+            //ProblemNine();
+            //ProblemTen();
+            //ProblemEleven();
+            //ProblemTwelve();
+            //ProblemThirteen();
+            //ProblemFourteen();
+            //ProblemFifteen();
+            //ProblemSixteen();
+            //ProblemSeventeen();
+            //ProblemEighteen();
+            //ProblemNineteen();
+            //ProblemTwenty();
+            BonusTwo();
         }
 
          //<><><><><><><><> R Actions(Read) <><><><><><><><><>
@@ -303,6 +305,14 @@ namespace DatabaseFirstLINQ
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+
+            List<User> hello = _context.Users.ToList();
+
+            foreach (var user in hello)
+            {
+                var userCarts = _context.ShoppingCarts.Include(uc => uc.Product).Where(uc => uc.UserId == user.Id).Select(uc => uc.Product.Price).Sum();
+                Console.WriteLine($"{user.Email}'s total is: ${userCarts}.");
+            }
         }
 
         // BIG ONE
