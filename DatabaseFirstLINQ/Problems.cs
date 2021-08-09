@@ -23,11 +23,7 @@ namespace DatabaseFirstLINQ
             ProblemSix();
             ProblemSeven();
             ProblemEight();
-<<<<<<< HEAD
             ProblemNine();
-=======
-            //ProblemNine();
->>>>>>> ac5973e3f11ded2e98318cabd36d601cff8794ed
             //ProblemTen();
             //ProblemEleven();
             //ProblemTwelve();
